@@ -1,10 +1,10 @@
-# Maintainer: Joan Figueras <ffigue at gmail dot com>
+# Maintainer: Yeqin Su <hougelangley1987@gmail.com>
 # Contributor: Torge Matthies <openglfreak at googlemail dot com>
 # Contributor: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
 # Contributor: Yoshi2889 <rick.2889 at gmail dot com>
 # Contributor: Tobias Powalowski <tpowa@archlinux.org>
 # Contributor: Thomas Baechler <thomas@archlinux.org>
-# Contributor: Yeqin Su <hougelangley1987@gmail.com>
+# Contributor: Joan Figueras <ffigue at gmail dot com>
 
 ##
 ## The following variables can be customized at build time. Use env or export to change at your wish
@@ -55,9 +55,9 @@ if [ -z ${_localmodcfg} ]; then
 fi
 
 # UKSM is tool like KSM but better.
-if [ -z ${use_uksm+x} ]; then
-  _use_uksm=y
-fi
+#if [ -z ${use_uksm+x} ]; then
+#  _use_uksm=y
+#fi
 
 # Tweak kernel options prior to a build via nconfig
 _makenconfig=y
@@ -65,7 +65,7 @@ _makenconfig=y
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 pkgbase=linux-xanmod-cacule-uksm
-pkgver=5.10.9
+pkgver=5.10.10
 _major=5.10
 _branch=5.x
 xanmod=1
@@ -99,7 +99,7 @@ done
 
 sha256sums=('dcdf99e43e98330d925016985bfbc7b83c66d367b714b2de0cbbfcbf83d8ca43'
             'cb36d0d05523e1154f84c060081481f799253da06edb127a2630e539c6974f12'
-            'afb5a80eba4633a3201fdc77d33832ddcd27f541f17a770b93d6eab6da95cf70'
+            '1ed722b6d1e18f82dd6d64a4598ac6b6a1c5bd165bdc098fbb886241b0cd7fc1'
             '2c7369218e81dee86f8ac15bda741b9bb34fa9cefcb087760242277a8207d511'
             '6c66dba73251440352f93ff32b72f5dd49536d0f17ef9347867660fd3a626991'
             '9f7931fe587cfbc918aabbf3a1211a7179c8b2b300a1fc38c22920df4ed7dc2a')
@@ -153,10 +153,10 @@ prepare() {
     scripts/config --disable CONFIG_USER_NS_UNPRIVILEGED
   fi
 
-  if [ "$use_uksm" = "n"]; then
-    msg2 "Disabling CONFIG_UKSM"
-    scripts/config --disable CONFIG_UKSM
-  fi
+  #if [ "$use_uksm" = "n"]; then
+  #  msg2 "Disabling CONFIG_UKSM"
+  #  scripts/config --disable CONFIG_UKSM
+  #fi
 
   # Let's user choose microarchitecture optimization in GCC
   sh ${srcdir}/choose-gcc-optimization.sh $_microarchitecture
