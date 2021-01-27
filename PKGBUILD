@@ -1,4 +1,4 @@
-# Maintainer: Yeqin Su <hougelangley1987@gmail.com>
+# Maintainer: 苏业钦 <hougelangley1987@gmail.com>
 # Contributor: Torge Matthies <openglfreak at googlemail dot com>
 # Contributor: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
 # Contributor: Yoshi2889 <rick.2889 at gmail dot com>
