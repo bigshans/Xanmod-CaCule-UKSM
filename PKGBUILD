@@ -1,4 +1,4 @@
-# Maintainer: 苏业钦 <hougelangley1987@gmail.com>
+# Maintainer: Yeqin Su <hougelangley1987@gmail.com>
 # Contributor: Torge Matthies <openglfreak at googlemail dot com>
 # Contributor: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
 # Contributor: Yoshi2889 <rick.2889 at gmail dot com>
@@ -7,6 +7,7 @@
 # Contributor: Joan Figueras <ffigue at gmail dot com>
 
 ##
+## 这个包默认就会安装内核头文件和内核了，不需要纠结
 ## The following variables can be customized at build time. Use env or export to change at your wish
 ##
 ##   Example: env _microarchitecture=25 use_numa=n use_tracers=n use_pds=n makepkg -sc
@@ -17,7 +18,7 @@
 ## Good option if your package is for one machine: 42 => native
 ## 我个人的恶趣味，就是选择 native，自动优化，当然各位根据自己的实际情况做出选择也是可以的
 if [ -z ${_microarchitecture+x} ]; then
-  _microarchitecture=42
+  _microarchitecture=99
 fi
 
 ## Disable NUMA since most users do not have multiple processors. Breaks CUDA/NvEnc.
@@ -36,16 +37,6 @@ fi
 ## 我觉得默认关掉会好些，个人观点
 if [ -z ${use_tracers+x} ]; then
   use_tracers=n
-fi
-
-## Enable CONFIG_USER_NS_UNPRIVILEGED flag https://aur.archlinux.org/cgit/aur.git/tree/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch?h=linux-ck
-## Set variable "use_ns" to: n to disable (stock Xanmod)
-##                           y to enable (stock Archlinux)
-## By the way, This is important for people who using Skype and Wechat UOS, if 'NO', these apps could using.
-## 如果你使用 skype 或者 wechatUOS，请选择这个补丁
-## 否则，软件无法启动
-if [ -z ${use_ns+x} ]; then
-  use_ns=y
 fi
 
 # Compile ONLY used modules to VASTLYreduce the number of modules built
@@ -69,10 +60,10 @@ _makenconfig=y
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 pkgbase=linux-xanmod-cacule-uksm
-pkgver=5.10.16
-_major=5.10
+pkgver=5.11.1
+_major=5.11
 _branch=5.x
-xanmod=1
+xanmod=2
 pkgrel=${xanmod}
 pkgdesc='Linux Xanmod. Branch with Cacule scheduler by Hamad Marri'
 url="http://www.xanmod.org/"
@@ -88,7 +79,7 @@ _srcname="linux-${pkgver}-xanmod${xanmod}"
 source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar."{xz,sign}
         "https://github.com/xanmod/linux/releases/download/${pkgver}-xanmod${xanmod}-cacule/patch-${pkgver}-xanmod${xanmod}-cacule.xz"
         choose-gcc-optimization.sh
-        '0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-CLONE_NEWUSER.patch'
+        'sphinx-workaround.patch'
         '0002-UKSM.patch'
         '0003-Makefile.patch')
 validpgpkeys=(
@@ -102,13 +93,13 @@ for _patch in $_commits; do
     source+=("${_patch}.patch::https://git.archlinux.org/linux.git/patch/?id=${_patch}")
 done
 
-sha256sums=('dcdf99e43e98330d925016985bfbc7b83c66d367b714b2de0cbbfcbf83d8ca43'
-            'cb36d0d05523e1154f84c060081481f799253da06edb127a2630e539c6974f12'
-            'e1c108a65a34c1ed2474a8296a517025fcb26c018bf1b4c02bc12b42487de000'
-            '2c7369218e81dee86f8ac15bda741b9bb34fa9cefcb087760242277a8207d511'
-            '6c66dba73251440352f93ff32b72f5dd49536d0f17ef9347867660fd3a626991'
-            '9f7931fe587cfbc918aabbf3a1211a7179c8b2b300a1fc38c22920df4ed7dc2a'
-            'bfd137da1c68797fd6b8ca3902f68e2eb10bb456786c5573ef0b545a7b191936')
+sha256sums=('04f07b54f0d40adfab02ee6cbd2a942c96728d87c1ef9e120d0cb9ba3fe067b4'
+            'b8bc4f6312bdc086c0fecd1cce1ab1ee12b7b4eff63f88239a65461d9ec5e91b'
+            'ef0f0d9bc504a77c7e11c07899b12193854bafaa8c8354ab08e6005bf3b68e7f'
+            'e840e41f0f91108f63fd6e085c93b02daa78729268bc31be7be7fb355203e38a'
+            '74339b8ad0ad99f08606c5de0dd3c38f502e29e5c6a78d6efbe656662edb8d73'
+            '6ae9b0f994c8cea6ddbaaa570a2570d8489643b33b61c68090670c241a0cd3cc')
+            'c98535c839c0d63416da97bf3b0ba7cc8d3a25e22451f21f51fe65af43dec971'
 
 export KBUILD_BUILD_HOST=${KBUILD_BUILD_HOST:-archlinux}
 export KBUILD_BUILD_USER=${KBUILD_BUILD_USER:-makepkg}
@@ -152,11 +143,6 @@ prepare() {
   if [ "$use_numa" = "n" ]; then
     msg2 "Disabling NUMA..."
     scripts/config --disable CONFIG_NUMA
-  fi
-
-  if [ "$use_ns" = "n" ]; then
-    msg2 "Disabling CONFIG_USER_NS_UNPRIVILEGED"
-    scripts/config --disable CONFIG_USER_NS_UNPRIVILEGED
   fi
 
   # Let's user choose microarchitecture optimization in GCC
