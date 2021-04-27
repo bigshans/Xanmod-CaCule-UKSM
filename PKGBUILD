@@ -28,7 +28,7 @@ arch=(x86_64)
 
 license=(GPL2)
 makedepends=(
-  xmlto kmod inetutils bc libelf cpio
+  bison xmlto docbook-xsl kmod inetutils bc libelf pahole patchutils flex python-sphinx python-sphinx_rtd_theme graphviz imagemagick git cpio perl tar xz
 )
 options=('!strip')
 _srcname="linux-${pkgver}-xanmod${xanmod}"
