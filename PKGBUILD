@@ -20,7 +20,7 @@ pkgbase=linux-xanmod-cacule-uksm
 pkgver=5.12.0
 _major=5.12
 _branch=5.x
-xanmod=1
+xanmod=2
 pkgrel=${xanmod}
 pkgdesc='Linux Xanmod. Branch with Cacule scheduler by Hamad Marri'
 url="http://www.xanmod.org/"
@@ -34,7 +34,7 @@ options=('!strip')
 _srcname="linux-${pkgver}-xanmod${xanmod}"
 
 source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar."{xz,sign}
-        "https://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.0-xanmod1-cacule"
+        "https://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.0-xanmod2-cacule"
         'v1-cjktty.patch'
         'v1-uksm.patch')
 validpgpkeys=(
@@ -147,10 +147,7 @@ prepare() {
 
 build() {
   cd linux-${_major}
-  make all
-}
-
-_package() {
+  make allhttps://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.0-xanmod2-cacule
   pkgdesc="The Linux kernel and modules with Xanmod patches"
   depends=(coreutils kmod initramfs)
   optdepends=('crda: to set the correct wireless channels of your country'
