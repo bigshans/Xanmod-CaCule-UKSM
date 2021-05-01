@@ -147,7 +147,10 @@ prepare() {
 
 build() {
   cd linux-${_major}
-  make allhttps://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.0-xanmod2-cacule
+  make all
+}
+
+_package() {
   pkgdesc="The Linux kernel and modules with Xanmod patches"
   depends=(coreutils kmod initramfs)
   optdepends=('crda: to set the correct wireless channels of your country'
