@@ -20,7 +20,7 @@ pkgbase=linux-xanmod-cacule-uksm
 pkgver=5.12.1
 _major=5.12
 _branch=5.x
-xanmod=1
+xanmod=2
 pkgrel=${xanmod}
 pkgdesc='Linux Xanmod. Branch with Cacule scheduler by Hamad Marri'
 url="http://www.xanmod.org/"
@@ -34,7 +34,7 @@ options=('!strip')
 _srcname="linux-${pkgver}-xanmod${xanmod}"
 
 source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar."{xz,sign}
-        "https://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.1-xanmod1-cacule"
+        "https://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.1-xanmod2-cacule"
         'v1-cjktty.patch'
         'v1-uksm.patch')
 validpgpkeys=(
