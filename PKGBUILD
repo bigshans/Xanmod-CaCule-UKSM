@@ -139,7 +139,7 @@ prepare() {
   make -s kernelrelease > version
   msg2 "Prepared %s version %s" "$pkgbase" "$(<version)"
 
-  [[ -z "$_makenconfig" ]] || make nconfig
+  [[ -z "$_makenconfig" ]] || make menuconfig
 
   # save configuration for later reuse
   cat .config > "${startdir}/config.last"
