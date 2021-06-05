@@ -147,7 +147,7 @@ prepare() {
 
 build() {
   cd linux-${_major}
-  make all -16
+  make all -j16
 }
 
 _package() {
