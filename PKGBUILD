@@ -94,9 +94,6 @@ _package() {
 
 		msg2 "Installing modules..."
 		make INSTALL_MOD_PATH="$pkgdir/usr" modules_install
-
-# remove build and source links
-		rm "$modulesdir"/{source,build}
 }
 
 _package-headers() {
