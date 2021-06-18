@@ -64,9 +64,80 @@ prepare() {
         patch -Np1 < "../$src"
     done
 
-# Using GCC Config
-    cp CONFIGS/xanmod/gcc/config .config
-    make menuconfig
+  # Applying configuration
+  cp -vf CONFIGS/xanmod/${_compiler}/config .config
+  # enable LTO_CLANG_THIN
+  if [ "${_compiler}" = "clang" ]; then
+    scripts/config --disable LTO_CLANG_FULL
+    scripts/config --enable LTO_CLANG_THIN
+    _LLVM=1
+  fi
+
+  # CONFIG_STACK_VALIDATION gives better stack traces. Also is enabled in all official kernel packages by Archlinux team
+  scripts/config --enable CONFIG_STACK_VALIDATION
+
+  # Enable IKCONFIG following Arch's philosophy
+  scripts/config --enable CONFIG_IKCONFIG \
+                 --enable CONFIG_IKCONFIG_PROC
+
+  # User set. See at the top of this file
+  if [ "$use_tracers" = "n" ]; then
+    msg2 "Disabling FUNCTION_TRACER/GRAPH_TRACER only if we are not compiling with clang..."
+    if [ "${_compiler}" = "gcc" ]; then
+      scripts/config --disable CONFIG_FUNCTION_TRACER \
+                     --disable CONFIG_STACK_TRACER
+    fi
+  fi
+
+  if [ "$use_numa" = "n" ]; then
+    msg2 "Disabling NUMA..."
+    scripts/config --disable CONFIG_NUMA
+  fi
+
+  # Let's user choose microarchitecture optimization in GCC
+  sh ${srcdir}/choose-gcc-optimization.sh $_microarchitecture
+
+  # This is intended for the people that want to build this package with their own config
+  # Put the file "myconfig" at the package folder (this will take preference) or "${XDG_CONFIG_HOME}/linux-xanmod/myconfig"
+  # If we detect partial file with scripts/config commands, we execute as a script
+  # If not, it's a full config, will be replaced
+  for _myconfig in "${SRCDEST}/myconfig" "${HOME}/.config/linux-xanmod/myconfig" "${XDG_CONFIG_HOME}/linux-xanmod/myconfig" ; do
+    if [ -f "${_myconfig}" ] && [ "$(wc -l <"${_myconfig}")" -gt "0" ]; then
+      if grep -q 'scripts/config' "${_myconfig}"; then
+        # myconfig is a partial file. Executing as a script
+        msg2 "Applying myconfig..."
+        bash -x "${_myconfig}"
+      else
+        # myconfig is a full config file. Replacing default .config
+        msg2 "Using user CUSTOM config..."
+        cp -f "${_myconfig}" .config
+      fi
+      echo
+      break
+    fi
+  done
+
+  ### Optionally load needed modules for the make localmodconfig
+  # See https://aur.archlinux.org/packages/modprobed-db
+  if [ "$_localmodcfg" = "y" ]; then
+    if [ -f $HOME/.config/modprobed.db ]; then
+      msg2 "Running Steven Rostedt's make localmodconfig now"
+      make LLVM=$_LLVM LLVM_IAS=$_LLVM LSMOD=$HOME/.config/modprobed.db localmodconfig
+    else
+      msg2 "No modprobed.db data found"
+      exit
+    fi
+  fi
+
+  make LLVM=$_LLVM LLVM_IAS=$_LLVM olddefconfig
+
+  make -s kernelrelease > version
+  msg2 "Prepared %s version %s" "$pkgbase" "$(<version)"
+
+  [[ -z "$_makenconfig" ]] || make LLVM=$_LLVM LLVM_IAS=$_LLVM nconfig
+
+  # save configuration for later reuse
+  cat .config > "${SRCDEST}/config.last"
 }
 
 build() {
@@ -93,7 +164,7 @@ _package() {
     echo "$pkgbase" | install -Dm644 /dev/stdin "$modulesdir/pkgbase"
 
     msg2 "Installing modules..."
-    make INSTALL_MOD_PATH="$pkgdir/usr" modules_install
+    make INSTALL_MOD_PATH="$pkgdir/usr" INSTALL_MOD_STRIP=1 modules_install
 }
 
 _package-headers() {
