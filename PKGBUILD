@@ -64,6 +64,10 @@ prepare() {
         patch -Np1 < "../$src"
     done
 
+
+  # Applying configuration
+  cp -vf CONFIGS/xanmod/gcc/config .config
+
   # CONFIG_STACK_VALIDATION gives better stack traces. Also is enabled in all official kernel packages by Archlinux team
   scripts/config --enable CONFIG_STACK_VALIDATION
 
