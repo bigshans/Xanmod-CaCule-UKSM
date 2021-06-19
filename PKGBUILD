@@ -44,29 +44,94 @@ makedepends=(
 	export KBUILD_BUILD_TIMESTAMP=${KBUILD_BUILD_TIMESTAMP:-$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})}
 
 	prepare() {
-		cd linux-${_major}
+    cd linux-${_major}
 
 # Apply Xanmod patch
-		patch -Np1 -i ../patch-${pkgver}-xanmod${xanmod}-cacule
+    patch -Np1 -i ../patch-${pkgver}-xanmod${xanmod}-cacule
 
-			msg2 "Setting version..."
-			scripts/setlocalversion --save-scmversion
-			echo "-$pkgrel" > localversion.10-pkgrel
-			echo "${pkgbase#linux-xanmod}" > localversion.20-pkgname
+    msg2 "Setting version..."
+    scripts/setlocalversion --save-scmversion
+    echo "-$pkgrel" > localversion.10-pkgrel
+    echo "${pkgbase#linux-xanmod}" > localversion.20-pkgname
 
 # Archlinux patches
-			local src
-			for src in "${source[@]}"; do
-				src="${src%%::*}"
-					src="${src##*/}"
-					[[ $src = *.patch ]] || continue
-					msg2 "Applying patch $src..."
-						patch -Np1 < "../$src"
-						done
+    local src
+    for src in "${source[@]}"; do
+        src="${src%%::*}"
+        src="${src##*/}"
+        [[ $src = *.patch ]] || continue
+        msg2 "Applying patch $src..."
+        patch -Np1 < "../$src"
+    done
 
-# Using GCC Config
-						cp CONFIGS/xanmod/gcc/config .config
-						make menuconfig
+
+  # Applying configuration
+  cp -vf CONFIGS/xanmod/gcc/config .config
+
+  # CONFIG_STACK_VALIDATION gives better stack traces. Also is enabled in all official kernel packages by Archlinux team
+  scripts/config --enable CONFIG_STACK_VALIDATION
+
+  # Enable IKCONFIG following Arch's philosophy
+  scripts/config --enable CONFIG_IKCONFIG \
+                 --enable CONFIG_IKCONFIG_PROC
+
+  # User set. See at the top of this file
+  if [ "$use_tracers" = "n" ]; then
+    msg2 "Disabling FUNCTION_TRACER/GRAPH_TRACER..."
+    scripts/config --disable CONFIG_FUNCTION_TRACER \
+                   --disable CONFIG_STACK_TRACER
+  fi
+
+  if [ "$use_numa" = "n" ]; then
+    msg2 "Disabling NUMA..."
+    scripts/config --disable CONFIG_NUMA
+  fi
+
+  # This is intended for the people that want to build this package with their own config
+  # Put the file "myconfig" at the package folder to use this feature
+  # If it's a full config, will be replaced
+  # If not, you should use scripts/config commands, one by line
+  if [ -f "${startdir}/myconfig" ]; then
+    if ! grep -q 'scripts/config' "${startdir}/myconfig"; then
+      # myconfig is a full config file. Replacing default .config
+      msg2 "Using user CUSTOM config..."
+      cp -f "${startdir}"/myconfig .config
+    else
+      # myconfig is a partial file. Applying every line
+      msg2 "Applying configs..."
+      cat "${startdir}"/myconfig | while read -r _linec ; do
+        if echo "$_linec" | grep "scripts/config" ; then
+          set -- $_linec
+          "$@"
+        else
+          warning "Line format incorrect, ignoring..."
+        fi
+      done
+    fi
+    echo
+  fi
+
+  make olddefconfig
+
+  ### Optionally load needed modules for the make localmodconfig
+  # See https://aur.archlinux.org/packages/modprobed-db
+  if [ "$_localmodcfg" = "y" ]; then
+    if [ -f $HOME/.config/modprobed.db ]; then
+      msg2 "Running Steven Rostedt's make localmodconfig now"
+      make LSMOD=$HOME/.config/modprobed.db localmodconfig
+    else
+      msg2 "No modprobed.db data found"
+      exit
+    fi
+  fi
+
+  make -s kernelrelease > version
+  msg2 "Prepared %s version %s" "$pkgbase" "$(<version)"
+
+  [[ -z "$_makenconfig" ]] || make menuconfig
+
+  # save configuration for later reuse
+  cat .config > "${startdir}/config.last"
 	}
 
 build() {
@@ -94,6 +159,9 @@ _package() {
 
 		msg2 "Installing modules..."
 		make INSTALL_MOD_PATH="$pkgdir/usr" modules_install
+		
+		# remove build and source links
+  		rm "$modulesdir"/{source,build}
 }
 
 _package-headers() {
