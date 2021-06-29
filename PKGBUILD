@@ -3,7 +3,7 @@
 ## Delete Useless thing ##
 
 pkgbase=linux-xanmod-cacule-uksm
-pkgver=5.12.12
+pkgver=5.12.13
 _major=5.12
 _branch=5.x
 xanmod=1
@@ -19,7 +19,7 @@ makedepends=(
 	_srcname="linux-${pkgver}-xanmod${xanmod}"
 
 	source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar."{xz,sign}
-			"https://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.12-xanmod1-cacule"
+			"https://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.13-xanmod1-cacule"
 			'v1-cjktty.patch'
 			'v1-uksm.patch')
 	validpgpkeys=(
