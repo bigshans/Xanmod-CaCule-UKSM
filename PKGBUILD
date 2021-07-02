@@ -3,8 +3,8 @@
 ## Delete Useless thing ##
 
 pkgbase=linux-xanmod-cacule-uksm
-pkgver=5.12.13
-_major=5.12
+pkgver=5.13.0
+_major=5.13
 _branch=5.x
 xanmod=1
 pkgrel=${xanmod}
@@ -19,7 +19,7 @@ options=('!strip')
 _srcname="linux-${pkgver}-xanmod${xanmod}"
 
 source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar."{xz,sign}
-        "https://github.com/HougeLangley/customkernel/releases/download/v5.12-patch/patch-5.12.13-xanmod1-cacule"
+        "https://github.com/HougeLangley/customkernel/releases/download/v5.13-patch/patch-5.13.0-xanmod1-cacule"
         'v1-cjktty.patch'
         'v1-uksm.patch')
 validpgpkeys=(
@@ -33,8 +33,8 @@ for _patch in $_commits; do
 source+=("${_patch}.patch::https://git.archlinux.org/linux.git/patch/?id=${_patch}")
 done
 
-sha256sums=('7d0df6f2bf2384d68d0bd8e1fe3e071d64364dcdc6002e7b5c87c92d48fac366'
-        '39045607567d69f84424b224e4fa6bf8f97a21a06ac9d6396acab16a18c4bcd3'
+sha256sums=('3f6baa97f37518439f51df2e4f3d65a822ca5ff016aa8e60d2cc53b95a6c89d9'
+        'SKIP'
         'SKIP'
         'SKIP'
         'SKIP')
