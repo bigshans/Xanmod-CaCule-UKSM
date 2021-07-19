@@ -23,7 +23,7 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar
         'v1-cjktty.patch'
         'v1-uksm.patch')
 validpgpkeys=(
-        'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linux Torvalds
+        'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds
         '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman
          )
 
