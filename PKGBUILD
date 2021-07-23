@@ -2,6 +2,16 @@
 ## Just For GCC ##
 ## Delete Useless thing ##
 
+ENABLE_ANBOX=n
+if [ $ENABLE_ANBOX == 'y' ]
+then
+    CONFIG_ASHMEM=m 
+    CONFIG_ANDROID=y
+    CONFIG_ANDROID_BINDER_IPC=m
+    CONFIG_ANDROID_BINDERFS=n
+    CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
+fi
+
 pkgbase=linux-xanmod-cacule-uksm
 pkgver=5.13.4
 _major=5.13
@@ -67,6 +77,16 @@ prepare() {
 
   # Applying configuration
   cp -vf CONFIGS/xanmod/gcc/config .config
+
+  # Anbox Setting
+  if [ $ENABLE_ANBOX == 'y' ]
+      then
+          scripts/config --module  CONFIG_ASHMEM
+          scripts/config --enable  CONFIG_ANDROID
+          scripts/config --enable  CONFIG_ANDROID_BINDER_IPC
+          scripts/config --enable  CONFIG_ANDROID_BINDERFS
+          scripts/config --set-str CONFIG_ANDROID_BINDER_DEVICES ""
+  fi
 
   # CONFIG_STACK_VALIDATION gives better stack traces. Also is enabled in all official kernel packages by Archlinux team
   scripts/config --enable CONFIG_STACK_VALIDATION
