@@ -13,7 +13,7 @@ then
 fi
 
 pkgbase=linux-xanmod-cacule-uksm
-pkgver=5.13.4
+pkgver=5.13.5
 _major=5.13
 _branch=5.x
 xanmod=1
@@ -29,7 +29,7 @@ options=('!strip')
 _srcname="linux-${pkgver}-xanmod${xanmod}"
 
 source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar."{xz,sign}
-        "https://github.com/HougeLangley/customkernel/releases/download/v5.13-patch/patch-5.13.4-xanmod1-cacule"
+        "https://github.com/HougeLangley/customkernel/releases/download/v${_major}-patch/patch-${pkgver}-xanmod1-cacule"
         'v1-cjktty.patch'
         'v1-uksm.patch')
 validpgpkeys=(
