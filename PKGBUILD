@@ -2,7 +2,7 @@
 ## Just For GCC ##
 ## Delete Useless thing ##
 
-ENABLE_ANBOX=n
+ENABLE_ANBOX=y
 if [ $ENABLE_ANBOX == 'y' ]
 then
     CONFIG_ASHMEM=m 
@@ -13,7 +13,7 @@ then
 fi
 
 pkgbase=linux-xanmod-cacule-uksm
-pkgver=5.13.5
+pkgver=5.13.6
 _major=5.13
 _branch=5.x
 xanmod=1

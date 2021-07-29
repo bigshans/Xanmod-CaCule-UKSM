@@ -1,5 +1,5 @@
 # Anbox Support
-Set ENABLE_ANBOX to y to add kernel support for anbox. The default is off.
+Set ENABLE_ANBOX to y to add kernel support for anbox.
 
 # Sorry for my mistake, I lost my AUR key, so if you guys like this Kernel, you could using PKGBUILD here #
 
