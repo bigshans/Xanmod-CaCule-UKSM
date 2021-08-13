@@ -13,7 +13,7 @@ then
 fi
 
 pkgbase=linux-xanmod-cacule-uksm
-pkgver=5.13.9
+pkgver=5.13.10
 _major=5.13
 _branch=5.x
 xanmod=1
